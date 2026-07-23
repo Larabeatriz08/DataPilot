@@ -4,20 +4,18 @@ import pandas as pd
 
 
 class ExcelReader:
+    """
+    Responsável por ler arquivos Excel.
+    """
 
     @staticmethod
-    def read(file_path: str):
-
-        path = Path(file_path)
-
-        if not path.exists():
-            raise FileNotFoundError(f"Arquivo não encontrado: {file_path}")
+    def read(path: Path) -> dict[str, pd.DataFrame]:
 
         excel = pd.ExcelFile(path)
 
-        sheets = {}
+        data = {}
 
         for sheet in excel.sheet_names:
-            sheets[sheet] = pd.read_excel(path, sheet_name=sheet)
+            data[sheet] = pd.read_excel(path, sheet_name=sheet)
 
-        return sheets
+        return data
