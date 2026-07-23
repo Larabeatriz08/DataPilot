@@ -7,6 +7,11 @@ def main():
 
     file = Path("input/clientes.xlsx")
 
+    # Verificações
+    print(f"Arquivo: {file}")
+    print(f"Existe? {file.exists()}")
+    print(f"Extensão: {file.suffix}")
+
     workbook = ImportService.import_excel(file)
 
     print("\n========== IMPORTAÇÃO ==========\n")
