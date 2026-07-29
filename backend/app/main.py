@@ -6,6 +6,8 @@ from app.utils.sample_generator import SampleGenerator
 
 from app.services.analyzer import Analyzer
 
+from app.automation.cleaning import Cleaning
+
 
 def main():
 
@@ -25,6 +27,10 @@ def main():
     print(f"Total de abas: {len(workbook)}\n")
 
     for sheet_name, dataframe in workbook.items():
+        print(f"\nProcessando {sheet_name}...")
+
+        dataframe = Cleaning.clean(dataframe)
+
         Analyzer.analyze(sheet_name, dataframe)
 
 if __name__ == "__main__":
