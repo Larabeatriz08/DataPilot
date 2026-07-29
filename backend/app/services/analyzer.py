@@ -1,28 +1,37 @@
-from app.utils.excel_reader import ExcelReader
+import pandas as pd
 
 
 class Analyzer:
+    """
+    Responsável por analisar a qualidade dos dados
+    de uma planilha.
+    """
 
     @staticmethod
-    def analyze(file_path: str):
+    def analyze(sheet_name: str, dataframe: pd.DataFrame):
 
-        sheets = ExcelReader.read(file_path)
+        print("\n" + "=" * 50)
+        print(f"PLANILHA: {sheet_name}")
+        print("=" * 50)
 
-        print("\n===== RELATÓRIO =====\n")
+        print(f"Linhas: {len(dataframe)}")
+        print(f"Colunas: {len(dataframe.columns)}")
 
-        for name, df in sheets.items():
+        print(f"\nValores nulos: {dataframe.isnull().sum().sum()}")
 
-            print(f"Planilha: {name}")
-            print(f"Linhas: {len(df)}")
-            print(f"Colunas: {len(df.columns)}")
+        print(f"Linhas duplicadas: {dataframe.duplicated().sum()}")
 
-            print("\nColunas:")
+        print(
+            f"Memória utilizada: "
+            f"{round(dataframe.memory_usage(deep=True).sum()/1024, 2)} KB"
+        )
 
-            for column in df.columns:
-                print(f" - {column}")
+        print("\nTipos das colunas:")
 
-            print("\nTipos:")
+        for coluna, tipo in dataframe.dtypes.items():
+            print(f"• {coluna}: {tipo}")
 
-            print(df.dtypes)
+        print("\nColunas encontradas:")
 
-            print("-" * 40)
+        for coluna in dataframe.columns:
+            print(f"✓ {coluna}")

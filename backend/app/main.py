@@ -2,8 +2,14 @@ from pathlib import Path
 
 from app.services.import_service import ImportService
 
+from app.utils.sample_generator import SampleGenerator
+
+from app.services.analyzer import Analyzer
+
 
 def main():
+
+    SampleGenerator.create()
 
     file = Path("input/clientes.xlsx")
 
@@ -19,12 +25,7 @@ def main():
     print(f"Total de abas: {len(workbook)}\n")
 
     for sheet_name, dataframe in workbook.items():
-
-        print(f"Planilha: {sheet_name}")
-        print(f"Linhas: {len(dataframe)}")
-        print(f"Colunas: {len(dataframe.columns)}")
-        print("-" * 35)
-
+        Analyzer.analyze(sheet_name, dataframe)
 
 if __name__ == "__main__":
     main()
