@@ -1,63 +1,99 @@
 from pathlib import Path
-
 import pandas as pd
 
 
 class SampleGenerator:
-    """
-    Gera uma planilha de exemplo para testes.
-    """
 
     @staticmethod
     def create():
 
-        input_folder = Path("input")
-        input_folder.mkdir(exist_ok=True)
+        output = Path("input/clientes.xlsx")
 
-        file = input_folder / "clientes.xlsx"
+        output.parent.mkdir(parents=True, exist_ok=True)
 
-        clientes = pd.DataFrame({
-            "ID": [1, 2, 3, 4, 5],
-            "Nome": [
-                "Ana",
-                "João",
-                "Maria",
-                "Carlos",
-                "Fernanda"
-            ],
-            "Cidade": [
-                "São Paulo",
-                "Campinas",
-                "Santos",
-                "Sorocaba",
-                "Osasco"
-            ],
-            "Valor": [
-                1500.50,
-                2300.00,
-                980.25,
-                4100.75,
-                1890.00
-            ]
-        })
+        clientes = pd.DataFrame([
+            {
+                "ID": 1,
+                "Nome": "Ana Silva",
+                "Idade": 24,
+                "Cidade": "São Paulo",
+                "Email": "ana@email.com"
+            },
+            {
+                "ID": 2,
+                "Nome": "João Santos",
+                "Idade": 31,
+                "Cidade": "Rio de Janeiro",
+                "Email": "joao@email.com"
+            },
+            {
+                "ID": 3,
+                "Nome": "Maria Oliveira",
+                "Idade": 28,
+                "Cidade": "São Paulo",
+                "Email": "maria@email.com"
+            },
+            {
+                "ID": 4,
+                "Nome": "Carlos Souza",
+                "Idade": 45,
+                "Cidade": "Belo Horizonte",
+                "Email": "carlos@email.com"
+            },
+            {
+                "ID": 5,
+                "Nome": "Beatriz Lima",
+                "Idade": 22,
+                "Cidade": "São Paulo",
+                "Email": "beatriz@email.com"
+            },
+            {
+                "ID": 5,
+                "Nome": "Beatriz Lima",
+                "Idade": 22,
+                "Cidade": "São Paulo",
+                "Email": "beatriz@email.com"
+            }
+        ])
 
-        vendas = pd.DataFrame({
-            "Pedido": [101, 102, 103, 104],
-            "Cliente": [
-                "Ana",
-                "João",
-                "Maria",
-                "Carlos"
-            ],
-            "Quantidade": [
-                2,
-                5,
-                1,
-                3
-            ]
-        })
+        vendas = pd.DataFrame([
+            {
+                "ID Venda": 1,
+                "Cliente": "Ana Silva",
+                "Produto": "Notebook",
+                "Valor": 4500
+            },
+            {
+                "ID Venda": 2,
+                "Cliente": "João Santos",
+                "Produto": "Mouse",
+                "Valor": 150
+            },
+            {
+                "ID Venda": 3,
+                "Cliente": "Maria Oliveira",
+                "Produto": "Teclado",
+                "Valor": 300
+            },
+            {
+                "ID Venda": 4,
+                "Cliente": "Carlos Souza",
+                "Produto": "Monitor",
+                "Valor": 1200
+            },
+            {
+                "ID Venda": 5,
+                "Cliente": "Beatriz Lima",
+                "Produto": "Headset",
+                "Valor": 450
+            }
+        ])
 
-        with pd.ExcelWriter(file, engine="openpyxl") as writer:
+        with pd.ExcelWriter(
+            output,
+            engine="openpyxl"
+        ) as writer:
+
             clientes.to_excel(
                 writer,
                 sheet_name="Clientes",
@@ -70,4 +106,4 @@ class SampleGenerator:
                 index=False
             )
 
-        print("Planilha de exemplo criada com sucesso!")
+        print(f"Arquivo criado com sucesso: {output}")
