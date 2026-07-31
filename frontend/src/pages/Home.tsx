@@ -1,10 +1,14 @@
+import { useState } from "react";
+
 import Header from "../components/Header";
 import UploadZone from "../components/UploadZone";
+import type { AnalysisResponse } from "../types/analysis";
 
 export default function Home() {
+  const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null);
+
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
-
       <Header />
 
       <section className="mx-auto flex max-w-7xl flex-col items-center px-6 py-24">
@@ -20,10 +24,15 @@ export default function Home() {
           detect inconsistencies and create reports automatically.
         </p>
 
-        <UploadZone />
+        <UploadZone {...({ onAnalyze: setAnalysis } as any)} />
+
+        {analysis && (
+          <pre className="mt-12 w-full rounded-xl bg-zinc-900 p-6 text-left">
+            {JSON.stringify(analysis, null, 2)}
+          </pre>
+        )}
 
       </section>
-
     </main>
   );
 }
