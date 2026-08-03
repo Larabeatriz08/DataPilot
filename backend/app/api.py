@@ -33,7 +33,7 @@ def home():
 @app.post("/analyze")
 async def analyze(file: UploadFile = File(...)):
 
-    # Verifica se é um arquivo Excel
+ 
     if not file.filename.endswith((".xlsx", ".xls")):
         raise HTTPException(
             status_code=400,
@@ -41,22 +41,21 @@ async def analyze(file: UploadFile = File(...)):
         )
 
     try:
-        # Garante que a pasta exista
+    
         input_folder = Path("input")
         input_folder.mkdir(exist_ok=True)
 
         upload_path = input_folder / file.filename
 
-        # Salva o arquivo enviado
+       
         with open(upload_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        # Importa as planilhas
+       
         workbook = ImportService.import_excel(upload_path)
 
         result = {}
 
-        # Analisa cada aba
         for sheet_name, dataframe in workbook.items():
 
             dataframe = Cleaning.clean(dataframe)
