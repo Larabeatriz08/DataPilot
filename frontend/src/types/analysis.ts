@@ -1,8 +1,10 @@
 export interface SheetAnalysis {
   rows: number;
   columns: number;
-  missing: number;
   duplicates: number;
+  missing: number;
 }
 
-export type AnalysisResponse = Record<string, SheetAnalysis>;
+export interface AnalysisResponse {
+  [sheet: string]: SheetAnalysis;
+}
