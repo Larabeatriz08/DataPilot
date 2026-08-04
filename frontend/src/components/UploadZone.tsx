@@ -1,16 +1,17 @@
 import { useState } from "react";
-import { UploadCloud, FileSpreadsheet, Loader2 } from "lucide-react";
-import * as apiService from "../services/api";
-
-const analyzeFile = async (selectedFile: File) => {
-  const uploadedFile = (apiService as any).analyzeFile;
-
-  if (typeof uploadedFile !== "function") {
-    throw new Error("The API service does not expose analyzeFile.");
-  }
-
-  return uploadedFile(selectedFile);
-};
+import {
+  UploadCloud,
+  FileSpreadsheet,
+  Loader2,
+  Database,
+  AlertTriangle,
+  Copy,
+  MemoryStick,
+} from "lucide-react";
+import { analyzeFile } from "../services/api";
+import QualityChart from "./charts/QualityChart";
+import OverviewChart from "./charts/OverviewChart";
+import DataTypesChart from "./charts/DataTypesChart";
 
 export default function UploadZone() {
   const [file, setFile] = useState<File | null>(null);
@@ -22,7 +23,10 @@ export default function UploadZone() {
     setError("");
     setResult(null);
 
-    if (!selectedFile.name.endsWith(".xlsx") && !selectedFile.name.endsWith(".xls")) {
+    if (
+      !selectedFile.name.endsWith(".xlsx") &&
+      !selectedFile.name.endsWith(".xls")
+    ) {
       setError("Please upload an Excel file (.xlsx or .xls).");
       return;
     }
@@ -32,11 +36,10 @@ export default function UploadZone() {
 
     try {
       const data = await analyzeFile(selectedFile);
-
       setResult(data);
     } catch (err) {
       console.error(err);
-      setError("Could not analyze the file. Please try again.");
+      setError("Could not analyze the file.");
     } finally {
       setLoading(false);
     }
@@ -53,35 +56,23 @@ export default function UploadZone() {
   }
 
   return (
-    <div className="mt-10 w-full max-w-3xl">
-
+    <div className="mt-10 w-full max-w-5xl">
       <label
         htmlFor="excel-upload"
         className="block cursor-pointer rounded-3xl border-2 border-dashed border-zinc-700 bg-zinc-900 p-16 transition hover:border-blue-500 hover:bg-zinc-800"
       >
-
         <div className="flex flex-col items-center">
-
           {loading ? (
-            <Loader2
-              size={60}
-              className="animate-spin text-blue-500"
-            />
+            <Loader2 size={60} className="animate-spin text-blue-500" />
           ) : file ? (
-            <FileSpreadsheet
-              size={60}
-              className="text-green-500"
-            />
+            <FileSpreadsheet size={60} className="text-green-500" />
           ) : (
-            <UploadCloud
-              size={60}
-              className="text-blue-500"
-            />
+            <UploadCloud size={60} className="text-blue-500" />
           )}
 
           <h2 className="mt-6 text-2xl font-semibold">
             {loading
-              ? "Analyzing your file..."
+              ? "Analyzing..."
               : file
               ? file.name
               : "Upload your Excel file"}
@@ -89,18 +80,11 @@ export default function UploadZone() {
 
           <p className="mt-3 text-center text-zinc-400">
             {loading
-              ? "DataPilot is analyzing your spreadsheet."
+              ? "DataPilot is processing your spreadsheet..."
               : file
               ? "Click to choose another file."
-              : "Drag and drop your spreadsheet here"}
+              : "Drag & Drop or click here"}
           </p>
-
-          {!file && !loading && (
-            <p className="mt-1 text-zinc-500">
-              or click to browse
-            </p>
-          )}
-
         </div>
 
         <input
@@ -110,43 +94,150 @@ export default function UploadZone() {
           className="hidden"
           onChange={handleInputChange}
         />
-
       </label>
 
       {error && (
-        <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-center text-red-400">
+        <div className="mt-5 rounded-xl border border-red-500 bg-red-500/10 p-4 text-red-400">
           {error}
         </div>
       )}
 
       {result && (
-        <div className="mt-8 rounded-3xl border border-zinc-800 bg-zinc-900 p-8">
+        <div className="mt-10">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold">
+              Analysis Completed
+            </h2>
 
-          <h3 className="text-2xl font-bold">
-            Analysis completed
-          </h3>
-
-          <p className="mt-2 text-zinc-400">
-            File: {result.filename}
-          </p>
-
-          <div className="mt-6">
-            <p className="text-zinc-400">
-              Sheets found
+            <p className="mt-2 text-zinc-400">
+              {result.filename}
             </p>
 
-            <p className="mt-1 text-3xl font-bold text-blue-500">
-              {result.totalSheets}
+            <p className="text-blue-400">
+              {result.totalSheets} worksheet(s) analyzed
             </p>
           </div>
 
-          <pre className="mt-6 overflow-auto rounded-xl bg-zinc-950 p-4 text-sm text-zinc-300">
-            {JSON.stringify(result.analysis, null, 2)}
-          </pre>
+          <div className="grid gap-8">
+            {Object.entries(result.analysis).map(
+              ([sheetName, sheet]: any) => (
+                <div
+                  key={sheetName}
+                  className="rounded-3xl border border-zinc-800 bg-zinc-900 p-8"
+                >
+                  <h3 className="mb-6 text-2xl font-bold">
+                    📄 {sheetName}
+                  </h3>
 
+                  <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                    <div className="rounded-xl bg-zinc-800 p-4">
+                      <Database className="mb-2 text-blue-400" />
+                      <p className="text-sm text-zinc-400">Rows</p>
+                      <p className="text-3xl font-bold">
+                        {sheet.rows}
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl bg-zinc-800 p-4">
+                      <FileSpreadsheet className="mb-2 text-green-400" />
+                      <p className="text-sm text-zinc-400">Columns</p>
+                      <p className="text-3xl font-bold">
+                        {sheet.columns}
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl bg-zinc-800 p-4">
+                      <AlertTriangle className="mb-2 text-yellow-400" />
+                      <p className="text-sm text-zinc-400">
+                        Missing
+                      </p>
+                      <p className="text-3xl font-bold">
+                        {sheet.missing}
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl bg-zinc-800 p-4">
+                      <Copy className="mb-2 text-pink-400" />
+                      <p className="text-sm text-zinc-400">
+                        Duplicates
+                      </p>
+                      <p className="text-3xl font-bold">
+                        {sheet.duplicates}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-8 flex items-center gap-2">
+                    <MemoryStick className="text-blue-400" />
+
+                    <span className="text-zinc-300">
+                      Memory usage:
+                    </span>
+
+                    <span className="font-bold">
+                      {sheet.memory} KB
+                    </span>
+                  </div>
+
+                  <div className="mt-8">
+                    <h4 className="mb-3 text-lg font-semibold">
+                      Columns
+                    </h4>
+
+                    <div className="flex flex-wrap gap-2">
+                      {sheet.columns_list.map((column: string) => (
+                        <span
+                          key={column}
+                          className="rounded-full bg-blue-500/20 px-4 py-2 text-blue-300"
+                        >
+                          {column}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                
+
+                  <div className="mt-10 border-t border-zinc-800 pt-8">
+                    <h4 className="mb-6 text-xl font-semibold">
+                      📊 Data Quality
+                    </h4>
+
+                    <QualityChart
+                      rows={sheet.rows}
+                      missing={sheet.missing}
+                    />
+                  </div>
+                  <div className="mt-10 border-t border-zinc-800 pt-8">
+
+                  <h4 className="mb-6 text-xl font-semibold">
+                    📈 Dataset Overview
+                  </h4>
+
+                  <OverviewChart
+                    rows={sheet.rows}
+                    columns={sheet.columns}
+                  />
+
+                </div>
+
+                <div className="mt-10 border-t border-zinc-800 pt-8">
+
+                  <h4 className="mb-6 text-xl font-semibold">
+                    🧬 Data Types
+                  </h4>
+
+                  <DataTypesChart
+                    columnTypes={sheet.column_types}
+                  />
+
+                </div>
+                </div>
+              )
+            )}
+          </div>
         </div>
       )}
-
     </div>
   );
 }
