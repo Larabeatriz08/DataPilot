@@ -12,6 +12,8 @@ import { analyzeFile } from "../services/api";
 import QualityChart from "./charts/QualityChart";
 import OverviewChart from "./charts/OverviewChart";
 import DataTypesChart from "./charts/DataTypesChart";
+import MemoryChart from "./charts/MemoryChart";
+import ColumnChart from "./charts/ColumnChart";
 
 export default function UploadZone() {
   const [file, setFile] = useState<File | null>(null);
@@ -232,6 +234,22 @@ export default function UploadZone() {
                   />
 
                 </div>
+
+                                  <div className="mt-10 border-t border-zinc-800 pt-8">
+                    <h4 className="mb-6 text-xl font-semibold">
+                      💾 Memory Usage
+                    </h4>
+
+                    <MemoryChart memory={sheet.memory} />
+                  </div>
+
+                  <div className="mt-10 border-t border-zinc-800 pt-8">
+                    <h4 className="mb-6 text-xl font-semibold">
+                      📑 Dataset Columns
+                    </h4>
+
+                    <ColumnChart columns={sheet.columns_list} />
+                  </div>
                 </div>
               )
             )}
